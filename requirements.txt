@@ -1,0 +1,8 @@
+numpy
+pydantic>=2
+typer>=0.9
+rich
+hydra-core>=1.3
+pandas
+matplotlib
+pytest
