@@ -1,12 +1,12 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Dict, Any
 from pydantic import BaseModel, Field, ValidationError
 
-# Base "function-call" style message
+# ---- Function-calling style ----
 class Call(BaseModel):
-    name: str
-    arguments: dict
+    name: Literal["move","pick","place"]
+    arguments: Dict[str, Any]
 
-# Concrete actions (strict, typed)
+# ---- Concrete actions (strict, typed) ----
 class ActMove(BaseModel):
     type: Literal["move"] = "move"
     direction: Literal["N","S","E","W"]
@@ -22,7 +22,7 @@ class ActPlace(BaseModel):
 Action = ActMove | ActPick | ActPlace
 
 def parse_action(raw: dict) -> Action:
-    """Strictly validate any proposed action dict against schema."""
+    """Validate a dict that already looks like {'type': 'move', ...}"""
     t = raw.get("type")
     try:
         if t == "move":
@@ -34,3 +34,20 @@ def parse_action(raw: dict) -> Action:
         raise ValueError(f"Unknown action type: {t}")
     except ValidationError as e:
         raise ValueError(f"Invalid action payload: {e}") from e
+
+def call_to_action_dict(call: Call) -> Dict[str, Any]:
+    """Convert function-call shape to our strict action dict."""
+    if call.name == "move":
+        d = call.arguments.get("direction")
+        return {"type": "move", "direction": d}
+    if call.name == "pick":
+        c = call.arguments.get("color")
+        return {"type": "pick", "color": c}
+    if call.name == "place":
+        w = call.arguments.get("where")
+        return {"type": "place", "where": w}
+    raise ValueError(f"Unknown call.name: {call.name}")
+
+def call_to_action(call: Call) -> Action:
+    """Call → strict Action model."""
+    return parse_action(call_to_action_dict(call))

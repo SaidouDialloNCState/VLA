@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.dist/
+build/
+*.egg-info/
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store
+
+# Runs/Artifacts
+runs/
+logs/
+*.jsonl
+*.csv

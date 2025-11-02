@@ -1,0 +1,6 @@
+defaults:
+  - env: gridworld
+  - agent: planner
+  - eval: default
+seed: 0
+instruction: "pick red then blue into bin"
